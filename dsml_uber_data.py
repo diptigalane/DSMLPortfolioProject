@@ -17,12 +17,23 @@ from sklearn.linear_model import LinearRegression, Lasso, Ridge, LogisticRegress
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 import seaborn as sns
-from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score, classification_report
 
-!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-01.parquet
+!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-01.parquet -O yellow_tripdata_2014-01.parquet
 
 df_jan_yellow_taxi = pd.read_parquet('/content/yellow_tripdata_2014-01.parquet', engine='pyarrow')
+
+df_jan_yellow_taxi.head()
+
+df_jan_yellow_taxi.info()
+
+df_jan_yellow_taxi.describe()
+
+df_jan_yellow_taxi.isna().sum()
+
+df_jan_yellow_taxi.duplicated().value_counts()
+
+df_jan_yellow_taxi.drop_duplicates(inplace=True)
 
 df_jan_yellow_taxi = df_jan_yellow_taxi[df_jan_yellow_taxi['trip_distance'] > 0]
 
@@ -51,7 +62,6 @@ def minute_bucket(mm):
 df_jan_yellow_taxi['minute_bucket'] = df_jan_yellow_taxi['Minute'].apply(minute_bucket)
 
 df_jan_yellow_taxi.head(3)
-#df_jan_yellow_taxi.info()
 
 # Morning - 0, Afternoon - 1, Evening - 2, Midnight - 3
 def hour_to_daytime(Hour):
@@ -89,38 +99,15 @@ data['sdate'] = (data['Date'] - pd.Timestamp("2014-01-01")) / np.timedelta64(1, 
 data['hour_minute'] = 6 * data['Hour'] + data['minute_bucket']
 data.head(3)
 
-df_jan_yellow_taxi.head()
-
 datacopy = data.copy()
 datacopy = datacopy.sort_values(['PULocationID', 'sdate', 'hour_minute']).reset_index(drop=True)
-#uber_data = pd.DataFrame()
-#datacopy.head()
 n = datacopy.shape[0]
 temp_df = datacopy.values
 temp = [[0,0,0,0,0],[1,0,0,0,0],[1,1,0,0,0],[1,1,1,0,0],[1,1,1,1,0]]
 for i in range(5,n):
     temp.append([temp_df[i-1][6],temp_df[i-2][6],temp_df[i-3][6],temp_df[i-4][6],temp_df[i-5][6]])
-#print(temp[-1])
 tdf = pd.DataFrame(temp, columns=['c1','c2','c3','c4','c5'])
-#print('tdf - ', tdf.shape, tdf.iloc[0])
 datacopy = pd.concat([tdf, datacopy], axis=1)
-
-
-'''for x in location_list:
-  df = datacopy[datacopy['PULocationID']==x]
-  d = df.shape[0]
-  temp_df = df.values
-  temp = [[0,0,0,0,0],[1,0,0,0,0],[1,1,0,0,0],[1,1,1,0,0],[1,1,1,1,0]]
-  for n in range(5,d):
-    temp.append([temp_df[n-1][6],temp_df[n-2][6],temp_df[n-3][6],temp_df[n-4][6],temp_df[n-5][6]])
-    if n == d-1:
-      print('temp - ', len(temp),temp)
-  #df[['c1','c2','c3','c4','c5']] = temp
-  pd_temp = pd.DataFrame(temp, columns=['c1','c2','c3','c4','c5']).reset_index(drop=True)
-  print('pd temp - ', pd_temp.shape, pd_temp.iloc[0])
-  df = pd.concat([pd_temp, df], axis=1).reset_index(drop=True)
-  print('df - ', df.iloc[0])
-  uber_data = pd.concat([df, uber_data])'''
 
 datacopy.tail(10)
 
@@ -128,6 +115,8 @@ jan_data = datacopy[['PULocationID', 'sdate', 'hour_minute', 'Daytime', 'holiday
 jan_data.info()
 
 jan_data.shape
+
+jan_data.head()
 
 jan_data.to_csv('uber_jdata.csv', index=False)
 
@@ -175,6 +164,5 @@ feb_data.to_csv('uber_fdata.csv', index=False)
 
 feb_data.shape
 
-feb_data.info()
-
 feb_data.head()
+
