@@ -22,9 +22,7 @@ from sklearn.metrics import accuracy_score, classification_report, mean_squared_
 **SGD Regressor**
 """
 
-!gdown 10HJWCQ3sP_uT-1P7dNnGmFsbbpWSM4rB
 
-!gdown 1KI5lBYi_XHjMxYEQoBs1-yXNqodKw3Qp
 
 jdata = pd.read_csv('uber_jdata.csv')
 

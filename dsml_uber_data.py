@@ -18,10 +18,23 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, PolynomialFeatur
 from sklearn.pipeline import make_pipeline
 import seaborn as sns
 from sklearn.metrics import accuracy_score, classification_report
+from requests import get
 
-!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-01.parquet -O yellow_tripdata_2014-01.parquet
+#!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-01.parquet -O yellow_tripdata_2014-01.parquet
+url = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-01.parquet"
+parquet_file01 = "yellow_tripdata_2014-01.parquet"
+with open(parquet_file01, "wb") as file:
+  response = get(url)
+  file.write(response.content)
 
-df_jan_yellow_taxi = pd.read_parquet('/content/yellow_tripdata_2014-01.parquet', engine='pyarrow')
+#!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-02.parquet -O yellow_tripdata_2014-02.parquet
+url = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-02.parquet"
+parquet_file02 = "yellow_tripdata_2014-02.parquet"
+with open(parquet_file02, "wb") as file:
+  response = get(url)
+  file.write(response.content)
+
+df_jan_yellow_taxi = pd.read_parquet(parquet_file01, engine='pyarrow')
 
 df_jan_yellow_taxi.head()
 
@@ -122,9 +135,7 @@ jan_data.to_csv('uber_jdata.csv', index=False)
 
 """**Feb data**"""
 
-!wget https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2014-02.parquet -O yellow_tripdata_2014-02.parquet
-
-df_feb_yellow_taxi = pd.read_parquet('yellow_tripdata_2014-02.parquet', engine='pyarrow')
+df_feb_yellow_taxi = pd.read_parquet(parquet_file02, engine='pyarrow')
 
 df_feb_yellow_taxi = df_feb_yellow_taxi[df_feb_yellow_taxi['trip_distance'] > 0]
 
